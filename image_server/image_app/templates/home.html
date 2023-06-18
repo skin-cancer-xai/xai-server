@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        var imageUrl = URL.createObjectURL($('input[name="image"]')[0].files[0]);
+                        $('#image-preview').attr('src', imageUrl);
+                        $('#predicted-class').text('Predicted Class: ' + response.predicted_class);
+                        $('#result').show();
+                    },
+                    error: function(xhr, textStatus, error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h2>Image Upload</h2>
+    <form enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" accept="image/*" />
+        <br /><br />
+        <input type="submit" value="Upload" />
+    </form>
+    <div id="result" style="display: none;">
+        <h3>Uploaded Image</h3>
+        <img id="image-preview" width="300" height="300" />
+        <p id="predicted-class"></p>
+    </div>
+</body>
+</html>
